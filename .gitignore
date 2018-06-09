@@ -1,0 +1,6 @@
+obj
+testbin
+.obj_exists
+.testbin_exists
+libclibrary.a
+
