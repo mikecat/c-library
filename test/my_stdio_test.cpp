@@ -6,6 +6,7 @@
 class MyStdioTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST_SUITE(MyStdioTest);
 	CPPUNIT_TEST(fputc_test);
+	CPPUNIT_TEST(putc_test);
 	CPPUNIT_TEST_SUITE_END();
 
 	my_FILE testFile;
@@ -84,6 +85,35 @@ public:
 		// test write error
 		charsToError = 0;
 		CPPUNIT_ASSERT_EQUAL(my_EOF, my_fputc('c', &testFile));
+	}
+
+	void putc_test() {
+		// initialize file
+		fileToReadBuffer.clear();
+		fileToWrittenBuffer.clear();
+		charsToError = -1;
+
+		// test normal operation
+		CPPUNIT_ASSERT_EQUAL((int)'a', my_putc('a', &testFile));
+		CPPUNIT_ASSERT_EQUAL((std::vector<unsigned char>::size_type)1, fileToWrittenBuffer.size());
+		CPPUNIT_ASSERT_EQUAL((unsigned char)'a', fileToWrittenBuffer.back());
+
+		CPPUNIT_ASSERT_EQUAL((int)'b', my_putc('b', &testFile));
+		CPPUNIT_ASSERT_EQUAL((std::vector<unsigned char>::size_type)2, fileToWrittenBuffer.size());
+		CPPUNIT_ASSERT_EQUAL((unsigned char)'b', fileToWrittenBuffer.back());
+
+		// test big number input
+		CPPUNIT_ASSERT_EQUAL((int)(unsigned char)0x1234, my_putc(0x1234, &testFile));
+		CPPUNIT_ASSERT_EQUAL((std::vector<unsigned char>::size_type)3, fileToWrittenBuffer.size());
+		CPPUNIT_ASSERT_EQUAL((unsigned char)0x1234, fileToWrittenBuffer.back());
+
+		CPPUNIT_ASSERT_EQUAL((int)(unsigned char)0x5678, my_putc(0x5678, &testFile));
+		CPPUNIT_ASSERT_EQUAL((std::vector<unsigned char>::size_type)4, fileToWrittenBuffer.size());
+		CPPUNIT_ASSERT_EQUAL((unsigned char)0x5678, fileToWrittenBuffer.back());
+
+		// test write error
+		charsToError = 0;
+		CPPUNIT_ASSERT_EQUAL(my_EOF, my_putc('c', &testFile));
 	}
 };
 

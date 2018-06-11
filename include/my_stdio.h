@@ -20,6 +20,8 @@ MY_C_LIBRARY_EXTERN_C
 
 int my_fputc(int c, my_FILE *stream);
 
+int my_putc(int c, my_FILE *stream);
+
 MY_C_LIBRARY_EXTERN_C_END
 
 #endif
