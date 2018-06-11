@@ -11,17 +11,15 @@ class MyStdioTest : public CPPUNIT_NS::TestFixture {
 	my_FILE testFile;
 	std::vector<unsigned char> fileToReadBuffer;
 	std::vector<unsigned char> fileToWrittenBuffer;
-	int charsToEof, charsToError;
+	int charsToError;
 
 	static my_size_t fileRead(void* status, unsigned char* data, my_size_t max_size) {
 		MyStdioTest& obj = *(MyStdioTest*)status;
 		my_size_t readSize = obj.fileToReadBuffer.size();
 		if (max_size < readSize) readSize = max_size;
-		if (obj.charsToEof >=0 && (my_size_t)obj.charsToEof < readSize) readSize = obj.charsToEof;
 		if (obj.charsToError >=0 && (my_size_t)obj.charsToError < readSize) readSize = obj.charsToError;
 		std::copy(obj.fileToReadBuffer.begin(), obj.fileToReadBuffer.begin() + readSize, data);
 		obj.fileToReadBuffer.erase(obj.fileToReadBuffer.begin(), obj.fileToReadBuffer.begin() + readSize);
-		if (obj.charsToEof >= 0) obj.charsToEof -= readSize;
 		if (obj.charsToError >= 0) obj.charsToError -= readSize;
 		return readSize;
 	}
@@ -38,7 +36,7 @@ class MyStdioTest : public CPPUNIT_NS::TestFixture {
 	}
 
 	static int fileIsEof(void* status) {
-		return ((MyStdioTest*)status)->charsToEof == 0 ? 1 : 0;
+		return ((MyStdioTest*)status)->fileToReadBuffer.empty() ? 1 : 0;
 	}
 
 	static int fileIsError(void* status) {
@@ -46,7 +44,7 @@ class MyStdioTest : public CPPUNIT_NS::TestFixture {
 	}
 
 public:
-	MyStdioTest() : charsToEof(-1), charsToError(-1) {}
+	MyStdioTest() : charsToError(-1) {}
 
 	void setUp() {
 		testFile.status = this;
@@ -63,7 +61,7 @@ public:
 		// initialize file
 		fileToReadBuffer.clear();
 		fileToWrittenBuffer.clear();
-		charsToEof = charsToError = -1;
+		charsToError = -1;
 
 		// test normal operation
 		CPPUNIT_ASSERT_EQUAL((int)'a', my_fputc('a', &testFile));
