@@ -3,6 +3,8 @@
 
 #include "my_stddef.h"
 
+#define MY_C_LIBRARY_UNGETC_MAX 16
+
 typedef struct {
 	/* user-defined data */
 	void* status;
@@ -12,6 +14,8 @@ typedef struct {
 	my_size_t (*write)(void* status, const unsigned char* data, my_size_t length);
 	int (*is_eof)(void* status);
 	int (*is_error)(void* status);
+	int ungetc_num;
+	unsigned char ungetc_buffer[MY_C_LIBRARY_UNGETC_MAX];
 } my_FILE;
 
 #define my_EOF (-1)
@@ -21,6 +25,8 @@ MY_C_LIBRARY_EXTERN_C
 int my_fputc(int c, my_FILE *stream);
 
 int my_putc(int c, my_FILE *stream);
+
+int my_ungetc(int c, my_FILE *stream);
 
 MY_C_LIBRARY_EXTERN_C_END
 

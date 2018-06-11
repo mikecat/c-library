@@ -7,6 +7,7 @@ class MyStdioTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST_SUITE(MyStdioTest);
 	CPPUNIT_TEST(fputc_test);
 	CPPUNIT_TEST(putc_test);
+	CPPUNIT_TEST(ungetc_test);
 	CPPUNIT_TEST_SUITE_END();
 
 	my_FILE testFile;
@@ -53,6 +54,7 @@ public:
 		testFile.write = fileWrite;
 		testFile.is_eof = fileIsEof;
 		testFile.is_error = fileIsError;
+		testFile.ungetc_num = 0;
 	}
 
 	void tearDown() {
@@ -114,6 +116,20 @@ public:
 		// test write error
 		charsToError = 0;
 		CPPUNIT_ASSERT_EQUAL(my_EOF, my_putc('c', &testFile));
+	}
+
+	void ungetc_test() {
+		// test normal operation
+		testFile.ungetc_num = 0;
+		for (int i = 0; i < MY_C_LIBRARY_UNGETC_MAX; i++) {
+			CPPUNIT_ASSERT_EQUAL((int)(' ' + i), my_ungetc(' ' + i, &testFile));
+		}
+		CPPUNIT_ASSERT_EQUAL(my_EOF, my_ungetc('a', &testFile));
+
+		// test EOF and conversion
+		testFile.ungetc_num = 0;
+		CPPUNIT_ASSERT_EQUAL(my_EOF, my_ungetc(my_EOF, &testFile));
+		CPPUNIT_ASSERT_EQUAL((int)(unsigned char)(my_EOF - 1), my_ungetc(my_EOF - 1, &testFile));
 	}
 };
 
