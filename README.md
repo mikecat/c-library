@@ -26,7 +26,7 @@ $ make test
 ## What is this?
 
 Trying to implement the C standard library.
-For usual OS is not available and normal C standard library cannot be used.
+For environments where usual OS is not available and normal C standard library cannot be used.
 
 ## How to build?
 
